@@ -52,7 +52,7 @@ test to see the many outcomes(win, lose)
 
 ## Authors
 
-* **Frankie Avina** - *Initial work* - (https://github.com/frankieavina)/(frankieavina.com)
+* **Frankie Avina** - *Initial work* - (https://github.com/frankieavina)
 
 
 ## License
