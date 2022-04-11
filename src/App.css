@@ -26,3 +26,8 @@ button {
   margin: 4rem auto; 
   justify-content: space-evenly;
 }
+
+.page{
+  min-height: 100vh ;
+
+}

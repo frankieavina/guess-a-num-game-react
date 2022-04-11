@@ -32,14 +32,14 @@ function GuessNumber() {
 
     const submittedGuess = (guess) =>{
 
-        console.log(answer)
         setGuess(guess);
-        setGuessesLeft(guessesLeft-1);
+        setGuessesLeft(previousState => previousState -1);
 
-        if( guessesLeft > 1){
+        if( guessesLeft > 1 || guess === answer){
             //check if you won if so Game Over: You Won.
             if(guess === answer){
                 setHeaderTitle('GAME OVER: YOU WON!') 
+                setBackground('green');
                 setOldAnswer(answer); 
                 setPlayAgain(true);
             }
@@ -51,6 +51,7 @@ function GuessNumber() {
                 //----The useState() functional updates form calls a function and passes it the previous state. The Array.map() 
                 //function returns a new arrays with the updated values. 
                 setGuessButtons((previousState)=>previousState.map((button) =>(button.id == guess ?  disableButton: button)));
+                setBackground('orange');
             } 
         }
 
@@ -61,6 +62,7 @@ function GuessNumber() {
             setHeaderTitle('GAME OVER: YOU LOST')
             setOldAnswer(answer);  
             setPlayAgain(true);
+            setBackground('red');
         }
 
     }
@@ -69,6 +71,7 @@ function GuessNumber() {
         // reset and hide play again button
         setPlayAgain(false);
         setGuessesLeft(3);
+        setBackground('blue'); 
         setHeaderTitle('GUESS A NUMBER'); 
         setGuess(null);
         // enable all buttons
@@ -76,7 +79,7 @@ function GuessNumber() {
     }
 
   return (
-    <div className=''>
+    <div className='page' style={{backgroundColor:`${background}`}}>
         <div className='title'>
             <h1>{headerTitle}</h1>
         </div>
