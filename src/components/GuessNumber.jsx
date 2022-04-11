@@ -11,6 +11,19 @@ function GuessNumber() {
     const [background, setBackground] = useState('blue')
     const [answer, setAnswer] = useState (null);  
     const [guess, setGuess] = useState(null); 
+    let [oldAnswer, setOldAnswer] = useState(); 
+    const [guessButtons, setGuessButtons] = useState([
+        {id:0, disable: false},
+        {id:1, disable: false},
+        {id:2, disable: false},
+        {id:3, disable: false},
+        {id:4, disable: false},
+        {id:5, disable: false},
+        {id:6, disable: false},
+        {id:7, disable: false},
+        {id:8, disable: false},
+        {id:9, disable: false}]);
+    let letOldAnswer; 
 
     // run only on the first render and any time dependency value changes 
     useEffect(() => {
@@ -19,6 +32,7 @@ function GuessNumber() {
 
     const submittedGuess = (guess) =>{
 
+        console.log(answer)
         setGuess(guess);
         setGuessesLeft(guessesLeft-1);
 
@@ -26,11 +40,17 @@ function GuessNumber() {
             //check if you won if so Game Over: You Won.
             if(guess === answer){
                 setHeaderTitle('GAME OVER: YOU WON!') 
+                setOldAnswer(answer); 
                 setPlayAgain(true);
             }
             else{
                 // and gray out the number selected 
-                                
+                let disableButton = {id:guess, disable:true}; 
+                //---Functional Update: If the new state is computed using the previous state, you can pass a function to setState.
+                // The function will receive the previous value, and return an updated value. 
+                //----The useState() functional updates form calls a function and passes it the previous state. The Array.map() 
+                //function returns a new arrays with the updated values. 
+                setGuessButtons((previousState)=>previousState.map((button) =>(button.id == guess ?  disableButton: button)));
             } 
         }
 
@@ -39,6 +59,7 @@ function GuessNumber() {
         {
             // You ran out of Guesses Game Over: You Lost 
             setHeaderTitle('GAME OVER: YOU LOST')
+            setOldAnswer(answer);  
             setPlayAgain(true);
         }
 
@@ -50,6 +71,8 @@ function GuessNumber() {
         setGuessesLeft(3);
         setHeaderTitle('GUESS A NUMBER'); 
         setGuess(null);
+        // enable all buttons
+        setGuessButtons(previousState => previousState.map((button) => ({id: button.id, disable: button.disable=false}))); 
     }
 
   return (
@@ -61,23 +84,16 @@ function GuessNumber() {
             {(!playAgain)?(
                 <p>Guesses Left:{guessesLeft}/3</p>
             ):(
-                <p>The answer was {answer}...</p>
+                <p>The answer was {oldAnswer}...</p>
             )}
         </div>
             {playAgain?(
                 <Button onClick={playAgainClicked}>Play Again</Button>
             ):(
                 <div className='buttons'>
-                    <Button onClick={() => submittedGuess('0')}>0</Button>
-                    <Button onClick={() => submittedGuess(1)}>1</Button>
-                    <Button onClick={() => submittedGuess(2)}>2</Button>
-                    <Button onClick={() => submittedGuess(3)}>3</Button>
-                    <Button onClick={() => submittedGuess(4)}>4</Button>
-                    <Button onClick={() => submittedGuess(5)}>5</Button>
-                    <Button onClick={() => submittedGuess(6)}>6</Button>
-                    <Button onClick={() => submittedGuess(7)}>7</Button>
-                    <Button onClick={() => submittedGuess(8)}>8</Button>
-                    <Button onClick={() => submittedGuess(9)}>9</Button>
+                    {guessButtons.map((button) => (
+                        <Button disable={button.disable} onClick={() => submittedGuess(button.id)}>{button.id}</Button>
+                    ))}
                 </div>
 
             )}
