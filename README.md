@@ -1,70 +1,64 @@
-# Getting Started with Create React App
+# Guess A Number Game in React 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Here is project that was done as a Bitwise Apprentice. The project/application is a game where you guess a number between 0-9. You have 
+3 tries to guess the number. Depending on the outcome you either win or lose. 
 
-## Available Scripts
+## Getting Started
 
-In the project directory, you can run:
+Fork the project if you want to modify it later on and push it to your own remote repo. 
+Clone it. 
 
-### `npm start`
+### Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+-VS Code 
+-Node
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Installing
 
-### `npm test`
+1) npm i to install all the node dependencies and 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2)npm start to execute the project. 
+```
 
-### `npm run build`
+## Running the tests
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- once the project is running you can see the correct answer in the console log. perform 
+test to see the many outcomes(win, lose)
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### And coding style tests
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- future implementation include: deploying it to my personal server, adding more styling, adding 
+    multiple players 
 
-### `npm run eject`
+## Deployment
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- In progress 
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Built With
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+* React
+* Node
+* CSS Styling/Flexbox
+* JSX 
+* React Hooks(useState, useEffect)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Contributing
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Versioning
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1.0.0
 
-### Code Splitting
+## Authors
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+* **Frankie Avina** - *Initial work* - (https://github.com/frankieavina)/(frankieavina.com)
 
-### Analyzing the Bundle Size
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## License
 
-### Making a Progressive Web App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
+## Acknowledgments
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+* Hat tip to Sarah our Bitwise Apprenticeship Lead 
