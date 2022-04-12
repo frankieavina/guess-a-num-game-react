@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import Button from './Button';
 import '../App.css';
+import { getPlayersList } from '../utils/utils'; 
 
 function GuessNumber() {
 
@@ -11,7 +12,8 @@ function GuessNumber() {
     const [background, setBackground] = useState('blue')
     const [answer, setAnswer] = useState (null);  
     const [guess, setGuess] = useState(null); 
-    let [oldAnswer, setOldAnswer] = useState(); 
+    const [oldAnswer, setOldAnswer] = useState(); 
+    const [players, setPlayers] = useState([]);
     const [guessButtons, setGuessButtons] = useState([
         {id:0, disable: false},
         {id:1, disable: false},
@@ -23,19 +25,35 @@ function GuessNumber() {
         {id:7, disable: false},
         {id:8, disable: false},
         {id:9, disable: false}]);
-    let letOldAnswer; 
 
     // run only on the first render and any time dependency value changes 
     useEffect(() => {
+        // fetch/get list of players from database 
+        getPlayersList().then((data) => {
+            setPlayers(data); 
+            console.log(data)
+        })
+        //get new number
         setAnswer(Math.floor(Math.random()*10)); 
     }, [playAgain])
 
+    useEffect(() => {
+        // when you run out of guesses
+        if(guessesLeft === 0){
+            setHeaderTitle('GAME OVER: YOU LOST')
+            setOldAnswer(answer);  
+            setPlayAgain(true);
+            setBackground('red');
+        }
+    },[guessesLeft])
+
     const submittedGuess = (guess) =>{
 
+        console.log(answer)
         setGuess(guess);
         setGuessesLeft(previousState => previousState -1);
 
-        if( guessesLeft > 1 || guess === answer){
+        if( guessesLeft > 0){
             //check if you won if so Game Over: You Won.
             if(guess === answer){
                 setHeaderTitle('GAME OVER: YOU WON!') 
@@ -50,32 +68,26 @@ function GuessNumber() {
                 // The function will receive the previous value, and return an updated value. 
                 //----The useState() functional updates form calls a function and passes it the previous state. The Array.map() 
                 //function returns a new arrays with the updated values. 
-                setGuessButtons((previousState)=>previousState.map((button) =>(button.id == guess ?  disableButton: button)));
+                setGuessButtons((previousState)=>previousState.map((button) =>
+                    (button.id == guess ?  disableButton: button)
+                ));
                 setBackground('orange');
             } 
         }
 
-        //when you run out of guesses 
-        else 
-        {
-            // You ran out of Guesses Game Over: You Lost 
-            setHeaderTitle('GAME OVER: YOU LOST')
-            setOldAnswer(answer);  
-            setPlayAgain(true);
-            setBackground('red');
-        }
-
     }
 
+    // click handler for playing again. reset all variables and buttons for new game
     const playAgainClicked = () => {
-        // reset and hide play again button
         setPlayAgain(false);
         setGuessesLeft(3);
         setBackground('blue'); 
         setHeaderTitle('GUESS A NUMBER'); 
         setGuess(null);
         // enable all buttons
-        setGuessButtons(previousState => previousState.map((button) => ({id: button.id, disable: button.disable=false}))); 
+        setGuessButtons(previousState => previousState.map((button) =>
+            ({id: button.id, disable: button.disable=false})
+        )); 
     }
 
   return (

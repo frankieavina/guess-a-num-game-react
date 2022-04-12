@@ -3,11 +3,11 @@
 }
 
 .title{
-  margin: 4rem auto; 
+  padding: 4rem; 
 }
 
 .answerGuesses{
-margin: 4rem auto; 
+padding: 4rem ; 
 }
 
 button {
