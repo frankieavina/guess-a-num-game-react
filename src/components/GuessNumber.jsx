@@ -1,11 +1,17 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Button from './Button';
 import '../App.css';
-import { getPlayersList } from '../utils/utils'; 
+import { collection,query,onSnapshot, doc } from 'firebase/firestore';
+import { db } from '../utils/firebase';
+import Players from './Players';
+import SelectPlayer from './SelectPlayer';
+
+const q = query(collection(db,'Players')); 
+
 
 function GuessNumber() {
 
-
+    const inputElement = useRef(); 
     const [headerTitle, setHeaderTitle] = useState('GUESS A NUMBER'); 
     const [guessesLeft, setGuessesLeft] = useState(3); 
     const [playAgain, setPlayAgain] = useState(false)
@@ -14,6 +20,7 @@ function GuessNumber() {
     const [guess, setGuess] = useState(null); 
     const [oldAnswer, setOldAnswer] = useState(); 
     const [players, setPlayers] = useState([]);
+    const [newUser, setNewUser] = useState('');
     const [guessButtons, setGuessButtons] = useState([
         {id:0, disable: false},
         {id:1, disable: false},
@@ -28,11 +35,6 @@ function GuessNumber() {
 
     // run only on the first render and any time dependency value changes 
     useEffect(() => {
-        // fetch/get list of players from database 
-        getPlayersList().then((data) => {
-            setPlayers(data); 
-            console.log(data)
-        })
         //get new number
         setAnswer(Math.floor(Math.random()*10)); 
     }, [playAgain])
@@ -46,6 +48,16 @@ function GuessNumber() {
             setBackground('red');
         }
     },[guessesLeft])
+
+    useEffect(() => {
+        onSnapshot(q,(snapshot)=>{
+            setPlayers(snapshot.docs.map(doc=>({
+              id: doc.id,
+              data: doc.data()
+            })))
+       })
+       console.log(players)
+    },[]);
 
     const submittedGuess = (guess) =>{
 
@@ -90,6 +102,12 @@ function GuessNumber() {
         )); 
     }
 
+    //adding new player info
+    const handleFormSubmit = () => {
+        setNewUser(inputElement.current.focus()); 
+        console.log(newUser)
+    }
+
   return (
     <div className='page' style={{backgroundColor:`${background}`}}>
         <div className='title'>
@@ -112,6 +130,25 @@ function GuessNumber() {
                 </div>
 
             )}
+            <h2>Scoreboard</h2>
+            {players.map((player) => (
+                <Players name={player.data.name} score={player.data.score}/>
+            ))}
+            {/* ------------------------------------------------------------------------------ */}
+            <form onSubmit={handleFormSubmit} >
+                    <div>
+                        <input
+                            type="text"
+                            placeholder="Name"
+                            name="firstName"
+                            ref={inputElement}
+                        />
+                    </div>
+                    <div>
+                        <button type="submit">Add Player</button>
+                    </div>
+            </form>
+            {/* ----------------------------------------------------------------------------------- */}
     </div>
 
   )

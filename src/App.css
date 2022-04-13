@@ -3,11 +3,11 @@
 }
 
 .title{
-  padding: 4rem; 
+  padding: 2rem; 
 }
 
 .answerGuesses{
-padding: 4rem ; 
+padding: 2rem ; 
 }
 
 button {
@@ -29,5 +29,26 @@ button {
 
 .page{
   min-height: 100vh ;
+}
 
+.playerTable{
+  width: 80%;
+  margin: 0 auto; 
+  padding: 1rem; 
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
 }
