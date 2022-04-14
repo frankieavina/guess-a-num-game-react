@@ -1,26 +1,28 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Button from './Button';
 import '../App.css';
-import { collection,query,onSnapshot, doc } from 'firebase/firestore';
+import { collection,query,onSnapshot, doc, addDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import Players from './Players';
-import SelectPlayer from './SelectPlayer';
+import { async } from '@firebase/util';
 
 const q = query(collection(db,'Players')); 
 
 
 function GuessNumber() {
 
-    const inputElement = useRef(); 
     const [headerTitle, setHeaderTitle] = useState('GUESS A NUMBER'); 
     const [guessesLeft, setGuessesLeft] = useState(3); 
     const [playAgain, setPlayAgain] = useState(false)
     const [background, setBackground] = useState('blue')
     const [answer, setAnswer] = useState (null);  
     const [guess, setGuess] = useState(null); 
+    const [count, setCount] = useState(0);
+    const [playerName, setPlayerName] = useState(''); 
     const [oldAnswer, setOldAnswer] = useState(); 
     const [players, setPlayers] = useState([]);
     const [newUser, setNewUser] = useState('');
+    const [selected, setSelected] = useState(''); 
     const [guessButtons, setGuessButtons] = useState([
         {id:0, disable: false},
         {id:1, disable: false},
@@ -39,6 +41,7 @@ function GuessNumber() {
         setAnswer(Math.floor(Math.random()*10)); 
     }, [playAgain])
 
+    // check guesses left if 0 you lost 
     useEffect(() => {
         // when you run out of guesses
         if(guessesLeft === 0){
@@ -49,6 +52,8 @@ function GuessNumber() {
         }
     },[guessesLeft])
 
+    // on initialization get players list from Firebase and 
+    // fetch again when there's a new user
     useEffect(() => {
         onSnapshot(q,(snapshot)=>{
             setPlayers(snapshot.docs.map(doc=>({
@@ -57,18 +62,22 @@ function GuessNumber() {
             })))
        })
        console.log(players)
-    },[]);
+    },[newUser,playAgain]);
 
     const submittedGuess = (guess) =>{
 
         console.log(answer)
         setGuess(guess);
         setGuessesLeft(previousState => previousState -1);
+        if(!selected){
+            return alert(`Please choose a player or create a new one.`);
+        }
 
         if( guessesLeft > 0){
             //check if you won if so Game Over: You Won.
             if(guess === answer){
-                setHeaderTitle('GAME OVER: YOU WON!') 
+                setHeaderTitle('GAME OVER: YOU WON!')
+                addScoreToPlayer();  
                 setBackground('green');
                 setOldAnswer(answer); 
                 setPlayAgain(true);
@@ -103,9 +112,43 @@ function GuessNumber() {
     }
 
     //adding new player info
-    const handleFormSubmit = () => {
-        setNewUser(inputElement.current.focus()); 
-        console.log(newUser)
+    const handleFormSubmit = (e) => {
+        e.preventDefault(); 
+        alert(`Hey ${newUser} you are now added to the scoreboard. Good luck!`);
+        // add to database 
+        addNewUser(newUser); 
+        setNewUser(''); 
+    }
+
+    const handleInputChange =(e) =>{
+        const { name, value } = e.target; // will have the name(yourName) and value('Frankie')
+        setNewUser(value)
+    }
+
+    const addNewUser = (user) => { // adding user to DB Firebase 
+        addDoc(collection(db,'Players'),{
+            name: user,
+            score: 0
+        })
+    }
+
+    //selected player 
+    const selectedPlayer = (id,name,score) => {
+        console.log(id); 
+        alert(`Hey ${name}. Remember to choose wisely. Good luck!`);
+        setSelected(id);
+        setCount(score); 
+        setPlayerName(name);
+    }
+
+    //update score
+    const addScoreToPlayer = async () => {
+        // update it both in db and is selected useState
+        setCount((previousState) => previousState+1);
+        const playerRef = doc(db,"Players",`${selected}`)
+        await updateDoc(playerRef,{
+            score: count 
+        })
     }
 
   return (
@@ -119,6 +162,9 @@ function GuessNumber() {
             ):(
                 <p>The answer was {oldAnswer}...</p>
             )}
+            {(selected)?(
+                <p>Playing as:<b>{playerName}</b>.</p>
+            ):( <p>No player selected yet.</p>)}
         </div>
             {playAgain?(
                 <Button onClick={playAgainClicked}>Play Again</Button>
@@ -132,22 +178,33 @@ function GuessNumber() {
             )}
             <h2>Scoreboard</h2>
             {players.map((player) => (
-                <Players name={player.data.name} score={player.data.score}/>
+                <div className='playerTable'>
+                    <Players name={player.data.name} score={player.data.score}/>
+                    <button onClick={() => selectedPlayer(player.id,player.data.name,player.data.score)}>Select</button>
+                </div>   
             ))}
             {/* ------------------------------------------------------------------------------ */}
-            <form onSubmit={handleFormSubmit} >
-                    <div>
-                        <input
-                            type="text"
-                            placeholder="Name"
-                            name="firstName"
-                            ref={inputElement}
-                        />
+            <div className='form'>
+                <h2>New User</h2>
+                <form onSubmit={handleFormSubmit} >
+                    <div style={{padding:'1rem'}}>
+                        <label htmlFor='yourUsername'>
+                            Username:
+                            <input
+                                type="text"
+                                id='yourUsername'
+                                name='yourUsername'
+                                placeholder="Username"
+                                value={newUser}
+                                onChange={handleInputChange}
+                            />                            
+                        </label>
                     </div>
                     <div>
                         <button type="submit">Add Player</button>
                     </div>
-            </form>
+                </form>                
+            </div>
             {/* ----------------------------------------------------------------------------------- */}
     </div>
 
