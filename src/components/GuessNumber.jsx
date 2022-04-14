@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import Button from './Button';
 import '../App.css';
-import { collection,query,onSnapshot, doc, addDoc, updateDoc } from 'firebase/firestore';
+import { collection,query,onSnapshot, doc, addDoc, updateDoc, getDocs } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import Players from './Players';
 import { async } from '@firebase/util';
 
+// Players Collection 
 const q = query(collection(db,'Players')); 
-
 
 function GuessNumber() {
 
@@ -55,14 +55,21 @@ function GuessNumber() {
     // on initialization get players list from Firebase and 
     // fetch again when there's a new user
     useEffect(() => {
-        onSnapshot(q,(snapshot)=>{
-            setPlayers(snapshot.docs.map(doc=>({
-              id: doc.id,
-              data: doc.data()
-            })))
-       })
-       console.log(players)
-    },[newUser,playAgain]);
+    //     onSnapshot(q,(snapshot)=>{
+    //         setPlayers(snapshot.docs.map(doc=>({
+    //           id: doc.id,
+    //           data: doc.data()
+    //         })))
+    //    })
+        setPlayers(getPlayersList());
+        console.log(players)
+    },[newUser,playAgain,count]);
+
+    const getPlayersList = async (db) => {
+        const playersSnapshot = await getDocs(q);
+        const playersList = playersSnapshot.docs.map(doc => ({id:doc.id, data:doc.data()}));
+        return playersList; 
+    }
 
     const submittedGuess = (guess) =>{
 
@@ -125,8 +132,8 @@ function GuessNumber() {
         setNewUser(value)
     }
 
-    const addNewUser = (user) => { // adding user to DB Firebase 
-        addDoc(collection(db,'Players'),{
+    const addNewUser = async (user) => { // adding user to DB Firebase 
+        await addDoc(collection(db,'Players'),{
             name: user,
             score: 0
         })
