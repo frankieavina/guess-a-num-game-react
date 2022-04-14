@@ -4,7 +4,6 @@ import '../App.css';
 import { collection,query,onSnapshot, doc, addDoc, updateDoc, getDocs } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import Players from './Players';
-import { async } from '@firebase/util';
 
 // Players Collection 
 const q = query(collection(db,'Players')); 
@@ -23,6 +22,7 @@ function GuessNumber() {
     const [players, setPlayers] = useState([]);
     const [newUser, setNewUser] = useState('');
     const [selected, setSelected] = useState(''); 
+    const [isLoading, setIsLoading] = useState(true)
     const [guessButtons, setGuessButtons] = useState([
         {id:0, disable: false},
         {id:1, disable: false},
@@ -35,7 +35,7 @@ function GuessNumber() {
         {id:8, disable: false},
         {id:9, disable: false}]);
 
-    // run only on the first render and any time dependency value changes 
+    // run only on the first render and any time any dependency value changes 
     useEffect(() => {
         //get new number
         setAnswer(Math.floor(Math.random()*10)); 
@@ -55,20 +55,16 @@ function GuessNumber() {
     // on initialization get players list from Firebase and 
     // fetch again when there's a new user
     useEffect(() => {
-    //     onSnapshot(q,(snapshot)=>{
-    //         setPlayers(snapshot.docs.map(doc=>({
-    //           id: doc.id,
-    //           data: doc.data()
-    //         })))
-    //    })
-        setPlayers(getPlayersList());
-        console.log(players)
+        getPlayersList();
+        
     },[newUser,playAgain,count]);
 
-    const getPlayersList = async (db) => {
+    const getPlayersList = async () => {
         const playersSnapshot = await getDocs(q);
         const playersList = playersSnapshot.docs.map(doc => ({id:doc.id, data:doc.data()}));
-        return playersList; 
+        console.log('Players',playersList)
+        setPlayers(playersList);
+        setIsLoading(false) 
     }
 
     const submittedGuess = (guess) =>{
@@ -155,7 +151,7 @@ function GuessNumber() {
         const playerRef = doc(db,"Players",`${selected}`)
         await updateDoc(playerRef,{
             score: count 
-        })
+        });
     }
 
   return (
@@ -184,12 +180,14 @@ function GuessNumber() {
 
             )}
             <h2>Scoreboard</h2>
-            {players.map((player) => (
+            {(!isLoading)?(players.map((player) => (
                 <div className='playerTable'>
                     <Players name={player.data.name} score={player.data.score}/>
                     <button onClick={() => selectedPlayer(player.id,player.data.name,player.data.score)}>Select</button>
                 </div>   
-            ))}
+            ))):(
+                <p>Loading...</p>
+            )}
             {/* ------------------------------------------------------------------------------ */}
             <div className='form'>
                 <h2>New User</h2>
